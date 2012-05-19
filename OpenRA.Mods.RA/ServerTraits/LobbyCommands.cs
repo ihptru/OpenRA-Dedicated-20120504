@@ -286,15 +286,6 @@ namespace OpenRA.Mods.RA.Server
 					s =>
 					{
 						return true;
-						if (!client.IsAdmin)
-						{
-							server.SendChatTo( conn, "Only the host can set that option" );
-							return true;
-						}
-
-						bool.TryParse(s, out server.lobbyInfo.GlobalSettings.AllowCheats);
-						server.SyncLobbyInfo();
-						return true;
 					}},
 				{ "kick",
 					s =>
@@ -442,7 +433,7 @@ namespace OpenRA.Mods.RA.Server
 			{
 				PlayerReference = pr.Name,
 				Closed = false,
-				AllowBots = pr.AllowBots,
+				AllowBots = false,
 				LockRace = pr.LockRace,
 				LockColor = pr.LockColor,
 				LockTeam = pr.LockTeam,
