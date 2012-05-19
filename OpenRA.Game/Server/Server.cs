@@ -193,7 +193,9 @@ namespace OpenRA.Server
 				var valid = mods.All( m => m.Contains('@')) && //valid format
 							mods.Count() == Game.CurrentMods.Count() &&  //same number
 							mods.Select( m => Pair.New(m.Split('@')[0], m.Split('@')[1])).All(kv => Game.CurrentMods.ContainsKey(kv.First) &&
-					 		(kv.Second == "{DEV_VERSION}" || Game.CurrentMods[kv.First].Version == "{DEV_VERSION}" || kv.Second == Game.CurrentMods[kv.First].Version));
+							(kv.Second == "{DEV_VERSION}" || Game.CurrentMods[kv.First].Version == "{DEV_VERSION}" || kv.Second == Game.CurrentMods[kv.First].Version));
+				// Drop {DEV_VERSION} from dedicated
+				if (mods.Any(m => m.Contains("{DEV_VERSION}"))) { valid = false; }
 
 				if (!valid)
 				{
@@ -204,7 +206,7 @@ namespace OpenRA.Server
 					DropClient(newConn);
 					return;
 				}
-
+				
 				// Promote connection to a valid client
 				preConns.Remove(newConn);
 				conns.Add(newConn);
@@ -220,6 +222,10 @@ namespace OpenRA.Server
 				//Assume that first validated client is server admin
 				if(lobbyInfo.Clients.Count==1)
 					client.IsAdmin=true;
+				string adminName = "";
+				OpenRA.Network.Session.Client c = lobbyInfo.Clients.Where(c1 => c1.IsAdmin).Last();
+				if (c != null)
+					adminName = c.Name;
 
 				Log.Write("server", "Client {0}: Accepted connection from {1}",
 					newConn.PlayerIndex, newConn.socket.RemoteEndPoint);
@@ -229,6 +235,13 @@ namespace OpenRA.Server
 
 				SyncLobbyInfo();
 				SendChat(newConn, "has joined the game.");
+				Console.WriteLine(client.Name+" has joined the game. ADDR: "+newConn.socket.RemoteEndPoint);
+				SendChatTo(newConn, "Welcome to the ihptru's dedicated server!");
+				if (client.IsAdmin == true)
+					SendChatTo(newConn, "    You are admin now!");
+				else
+					SendChatTo(newConn, "    Current admin is "+adminName);
+				SendChatTo(newConn, "    If you see any bug, please report it.");
 
 				if (mods.Any(m => m.Contains("{DEV_VERSION}")))
 					SendChat(newConn, "is running a development version, "+
@@ -406,6 +419,8 @@ namespace OpenRA.Server
 		public void StartGame()
 		{
 			GameStarted = true;
+			listener.Stop();
+			Console.WriteLine("Game started");
 			foreach( var c in conns )
 				foreach( var d in conns )
 					DispatchOrdersToClient( c, d.PlayerIndex, 0x7FFFFFFF, new byte[] { 0xBF } );

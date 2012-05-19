@@ -135,7 +135,8 @@ namespace OpenRA.Graphics
 				FixOSX();
 
 			var resolution = GetResolution( windowMode );
-			var rendererPath = Path.GetFullPath( "OpenRA.Renderer.{0}.dll".F(Game.Settings.Graphics.Renderer) );
+			string renderer=Game.arguments.ContainsFlag("headless")?"Null":Game.Settings.Graphics.Renderer;
+			var rendererPath = Path.GetFullPath( "OpenRA.Renderer.{0}.dll".F(renderer) );
 			device = CreateDevice( Assembly.LoadFile( rendererPath ), resolution.Width, resolution.Height, windowMode );
 		}
 

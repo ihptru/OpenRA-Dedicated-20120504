@@ -76,7 +76,7 @@ namespace OpenRA.GameRules
 		public bool Shuffle = false;
 		public bool Repeat = false;
 		public bool ShellmapMusic = true;
-		public string Engine = "AL";
+		public string Engine = "Null";
 	}
 
 	public class PlayerSettings
