@@ -1,0 +1,60 @@
+# Visual Studio crap
+Release
+bin
+obj
+*.ncb
+*.vcproj*
+*.suo
+*.user
+*.sln.cache
+*.manifest
+mods/*/*.dll
+
+# Red Alert binary files
+mods/*/packages/*.[mM][iI][xX]
+
+#binary stuff
+/*.dll
+*.pdb
+*.mdb
+*.exe
+
+# backup files by various editors
+*~
+*.orig
+# dependency DLLs (different for every platform!)
+cg.dll
+cgGL.dll
+
+/OpenRa.Gl.dll
+
+#monodevelop
+*.pidb
+*.userprefs
+
+packaging/windows/*.exe
+
+# osx crap
+.DS_Store
+
+# osx build crap
+packaging/osx/launcher/build/
+packaging/osx/launcher/OpenRA.xcodeproj/*.pbxuser
+packaging/osx/launcher/OpenRA.xcodeproj/*.perspectivev3
+packaging/osx/launcher/OpenRA.xcodeproj/*.mode1v3
+temp.c
+temp.o
+temp.s
+OpenRA.Launcher.Mac/build/
+OpenRA.Launcher.Mac/OpenRA.xcodeproj/*.pbxuser
+OpenRA.Launcher.Mac/OpenRA.xcodeproj/*.perspectivev3
+OpenRA.Launcher.Mac/OpenRA.xcodeproj/*.mode1v3
+*.config
+*.resources
+
+# other crap
+Logs/
+Replays/
+settings.yaml
+\#*
+.*.sw?
