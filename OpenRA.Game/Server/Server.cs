@@ -447,6 +447,7 @@ namespace OpenRA.Server
 
 			foreach (var t in ServerTraits.WithInterface<IStartGame>())
 				t.GameStarted(this);
+			System.Environment.Exit(0);
 		}
 	}
 }

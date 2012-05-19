@@ -1,0 +1,21 @@
+#!/bin/bash
+
+PORT="1234"
+
+while true
+do
+    mono OpenRA.Game.exe Server.ListenPort=`echo $PORT` Server.ExternalPort=`echo $PORT` --headless --headless-no-config 
+    while true
+    do
+	sleep 10
+        COUNT=`ps aux | grep OpenRA.Game.exe | grep -v grep | grep -v sh | awk 'BEGIN {cnt=0} {cnt++} END {print cnt}'`
+        if [ $COUNT -lt "5" ]; then
+            break
+        fi
+    done
+
+    PORT=`expr $PORT + 1`
+
+    if [ $PORT -eq "1255" ]; then PORT="1234"; fi
+
+done
