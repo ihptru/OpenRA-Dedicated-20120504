@@ -387,12 +387,25 @@ namespace OpenRA.Server
 			{
 				conns.Remove(toDrop);
 				SendChat(toDrop, "Connection Dropped");
+				OpenRA.Network.Session.Client oldCli = lobbyInfo.Clients.Where(c1 => c1.Index == toDrop.PlayerIndex).Last();
+				Console.WriteLine(oldCli.Name+" has left the game.");
 
 				if (GameStarted)
 					SendDisconnected(toDrop); /* Report disconnection */
 
 				lobbyInfo.Clients.RemoveAll(c => c.Index == toDrop.PlayerIndex);
-
+				
+				// reassign admin if necessary
+				if (oldCli.IsAdmin == true && !GameStarted)
+				{
+					if (lobbyInfo.Clients.Count() > 0)
+					{
+						// client was not alone on server but he was admin: set admin to the last connected client
+						OpenRA.Network.Session.Client newCli = lobbyInfo.Clients.Last();
+						newCli.IsAdmin = true;
+						SendChat(toDrop, "Admin left! "+newCli.Name+" is a new admin now!");
+					}
+				}	
 				DispatchOrders( toDrop, toDrop.MostRecentFrame, new byte[] { 0xbf } );
 
 				if (conns.Count != 0)
