@@ -285,6 +285,7 @@ namespace OpenRA.Mods.RA.Server
 				{ "allowcheats",
 					s =>
 					{
+						return true;
 						if (!client.IsAdmin)
 						{
 							server.SendChatTo( conn, "Only the host can set that option" );
