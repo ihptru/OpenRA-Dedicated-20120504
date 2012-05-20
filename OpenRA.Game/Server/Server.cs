@@ -433,7 +433,6 @@ namespace OpenRA.Server
 		{
 			GameStarted = true;
 			listener.Stop();
-			Console.WriteLine("Game started");
 			foreach( var c in conns )
 				foreach( var d in conns )
 					DispatchOrdersToClient( c, d.PlayerIndex, 0x7FFFFFFF, new byte[] { 0xBF } );
@@ -447,7 +446,6 @@ namespace OpenRA.Server
 
 			foreach (var t in ServerTraits.WithInterface<IStartGame>())
 				t.GameStarted(this);
-			System.Environment.Exit(0);
 		}
 	}
 }
