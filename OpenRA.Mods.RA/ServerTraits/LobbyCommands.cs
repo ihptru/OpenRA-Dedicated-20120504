@@ -44,7 +44,7 @@ namespace OpenRA.Mods.RA.Server
 				server.SendChatTo(conn, "Cannot change state when game started. ({0})".F(cmd));
 				return false;
 			}
-			else if (client.State == Session.ClientState.Ready && !(cmd == "ready" || cmd == "startgame"))
+			else if (client.State == Session.ClientState.Ready && !(cmd == "ready" || cmd == "normalstart"))
 			{
 				server.SendChatTo(conn, "Cannot change state when marked as ready.");
 				return false;
@@ -75,15 +75,21 @@ namespace OpenRA.Mods.RA.Server
 						server.SyncLobbyInfo();
 
 						if (server.conns.Count > 0 && server.conns.All(c => server.GetClient(c).State == Session.ClientState.Ready))
-							InterpretCommand(server, conn, client, "startgame");
+							InterpretCommand(server, conn, client, "normalstart");
 
 						return true;
+					}},
+				{ "normalstart",
+					s =>
+					{
+						server.StartGame();
+						return true;	
 					}},
 				{ "startgame",
 					s =>
 					{
-						server.StartGame();
-						return true;
+						server.SendChatTo(conn, "No rights!");
+						return true;	
 					}},
 				{ "lag",
 					s =>
@@ -127,28 +133,7 @@ namespace OpenRA.Mods.RA.Server
 				{ "slot_close",
 					s =>
 					{
-						if (!ValidateSlotCommand( server, conn, client, s, true ))
-							return false;
-
-						// kick any player that's in the slot
-						var occupant = server.lobbyInfo.ClientInSlot(s);
-						if (occupant != null)
-						{
-							if (occupant.Bot != null)
-								server.lobbyInfo.Clients.Remove(occupant);
-							else
-							{
-								var occupantConn = server.conns.FirstOrDefault( c => c.PlayerIndex == occupant.Index );
-								if (occupantConn != null)
-								{
-									server.SendOrderTo(occupantConn, "ServerError", "Your slot was closed by the host");
-									server.DropClient(occupantConn);
-								}
-							}
-						}
-
-						server.lobbyInfo.Slots[s].Closed = true;
-						server.SyncLobbyInfo();
+						server.SendChatTo(conn, "No rights!");
 						return true;
 					}},
 				{ "slot_open",
@@ -290,26 +275,7 @@ namespace OpenRA.Mods.RA.Server
 				{ "kick",
 					s =>
 					{
-
-						if (!client.IsAdmin)
-						{
-							server.SendChatTo( conn, "Only the host can kick players" );
-							return true;
-						}
-
-						int clientID;
-						int.TryParse( s, out clientID );
-
-						var connToKick = server.conns.SingleOrDefault( c => server.GetClient(c) != null && server.GetClient(c).Index == clientID);
-						if (connToKick == null)
-						{
-							server.SendChatTo( conn, "Noone in that slot." );
-							return true;
-						}
-
-						server.SendOrderTo(connToKick, "ServerError", "You have been kicked from the server");
-						server.DropClient(connToKick);
-						server.SyncLobbyInfo();
+						server.SendChatTo(conn, "No rights!");
 						return true;
 					}},
 				{ "name",
