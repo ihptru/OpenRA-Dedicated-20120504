@@ -4,6 +4,6 @@ PORT="1234"
 
 while true
 do
-    mono OpenRA.Game.exe Server.Name=OpenRA_ Server.ListenPort=`echo $PORT` Server.ExternalPort=`echo $PORT` --headless --headless-no-config 
+    mono OpenRA.Game.exe Game.Mods=ra Server.Name=_openra_ Server.ListenPort=`echo $PORT` Server.ExternalPort=`echo $PORT` --headless --headless-no-config
     sleep 5
 done

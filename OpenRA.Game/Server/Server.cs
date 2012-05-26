@@ -16,6 +16,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using System.Timers;
 using OpenRA.FileFormats;
 using OpenRA.GameRules;
 using OpenRA.Network;
@@ -463,6 +464,20 @@ namespace OpenRA.Server
 
 			foreach (var t in ServerTraits.WithInterface<IStartGame>())
 				t.GameStarted(this);
+
+			// Kill started game after 5 hours
+			aTimer = new System.Timers.Timer(18000000);
+			aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+			aTimer.Enabled = true;
 		}
+		
+		private static System.Timers.Timer aTimer;
+		
+		private static void OnTimedEvent(object source, ElapsedEventArgs e)
+		{
+        	Console.WriteLine("Started game has Timed Out at {0} !!!", e.SignalTime);
+			System.Environment.Exit(0);
+		}
+
 	}
 }
