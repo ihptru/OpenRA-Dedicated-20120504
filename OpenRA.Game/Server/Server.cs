@@ -71,6 +71,7 @@ namespace OpenRA.Server
 			lobbyInfo.GlobalSettings.RandomSeed = randomSeed;
 			lobbyInfo.GlobalSettings.Map = settings.Map;
 			lobbyInfo.GlobalSettings.ServerName = settings.Name;
+			lobbyInfo.GlobalSettings.Ban = settings.Ban;
 
 			foreach (var t in ServerTraits.WithInterface<INotifyServerStart>())
 				t.ServerStarted(this);
@@ -205,6 +206,25 @@ namespace OpenRA.Server
 					SendOrderTo(newConn, "ServerError", "Your mods don't match the server");
 					DropClient(newConn);
 					return;
+				}
+				
+				// Check if IP is banned
+				if (lobbyInfo.GlobalSettings.Ban != null)
+				{
+					List<string> BanList = lobbyInfo.GlobalSettings.Ban.Split(',').ToList();
+					string remote_addr = ((IPEndPoint)newConn.socket.RemoteEndPoint).Address.ToString();
+					foreach (var IPBanList in BanList)
+					{
+						if (remote_addr == IPBanList)
+						{
+							Console.WriteLine("Rejected connection from "+client.Name+"("+newConn.socket.RemoteEndPoint+"); Banned.");
+							Log.Write("server", "Rejected connection from {0}; Banned.",
+								newConn.socket.RemoteEndPoint);
+							SendOrderTo(newConn, "ServerError", "You are banned from the server!");
+							DropClient(newConn);
+							return;
+						}
+					}
 				}
 				
 				// Promote connection to a valid client
