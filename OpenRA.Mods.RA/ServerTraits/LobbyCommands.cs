@@ -88,7 +88,7 @@ namespace OpenRA.Mods.RA.Server
 				{ "startgame",
 					s =>
 					{
-						server.SendChatTo(conn, "No rights!");
+						server.SendChatTo(conn, "No rights! To start the game, everyone must tick Ready!");
 						return true;	
 					}},
 				{ "lag",

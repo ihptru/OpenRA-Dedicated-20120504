@@ -252,7 +252,7 @@ namespace OpenRA.Server
 
 				SyncLobbyInfo();
 				SendChat(newConn, "has joined the game.");
-				Console.WriteLine(client.Name+" has joined the game. ADDR: "+newConn.socket.RemoteEndPoint);
+				Console.WriteLine(client.Name+" has joined the game. [ADDR: "+newConn.socket.RemoteEndPoint+"] ["+lobbyInfo.Clients.Count()+" clients online]");
 				SendChatTo(newConn, "Welcome to the ihptru's dedicated server!");
 				if (client.IsAdmin == true)
 					SendChatTo(newConn, "    You are admin now!");
@@ -404,13 +404,15 @@ namespace OpenRA.Server
 			{
 				conns.Remove(toDrop);
 				SendChat(toDrop, "Connection Dropped");
+
 				OpenRA.Network.Session.Client oldCli = lobbyInfo.Clients.Where(c1 => c1.Index == toDrop.PlayerIndex).Last();
-				Console.WriteLine(oldCli.Name+" has left the game.");
 
 				if (GameStarted)
 					SendDisconnected(toDrop); /* Report disconnection */
 
 				lobbyInfo.Clients.RemoveAll(c => c.Index == toDrop.PlayerIndex);
+				
+				Console.WriteLine(oldCli.Name+" has left the game."+" ["+lobbyInfo.Clients.Count()+" clients online]");
 				
 				// reassign admin if necessary
 				if (oldCli.IsAdmin == true && !GameStarted)
@@ -475,9 +477,8 @@ namespace OpenRA.Server
 		
 		private static void OnTimedEvent(object source, ElapsedEventArgs e)
 		{
-        	Console.WriteLine("Started game has Timed Out at {0} !!!", e.SignalTime);
+			Console.WriteLine("Started game has Timed Out at {0} !!!", e.SignalTime);
 			System.Environment.Exit(0);
 		}
-
 	}
 }

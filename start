@@ -1,9 +1,28 @@
 #!/bin/bash
+# press CTRL+Z to stop the server after current game is finished
+
+EXIT="0"
+
+COL_BLUE="\x1b[34;01m"
+COL_RESET="\x1b[39;49;00m"
 
 PORT="1234"
 
+echo -e $COL_BLUE"- Starting Dedicated OpenRA server -"$COL_RESET
+
+trap 'EXIT="1"' SIGTSTP
+
 while true
 do
+    if [ $EXIT = "1" ]; then
+        break
+    fi
+
+    echo -e $COL_BLUE"- Hosting a new game -"$COL_RESET
     mono OpenRA.Game.exe Game.Mods=ra Server.Name=_openra_ Server.ListenPort=`echo $PORT` Server.ExternalPort=`echo $PORT` --headless --headless-no-config
+
     sleep 5
 done
+
+echo -e $COL_BLUE"- Stopping Dedicated server -"$COL_RESET
+
