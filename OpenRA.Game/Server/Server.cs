@@ -83,6 +83,8 @@ namespace OpenRA.Server
 
 			Log.Write("server", "Initial map: {0}",lobbyInfo.GlobalSettings.Map);
 
+			SyncLobbyInfo();
+			
 			new Thread( _ =>
 			{
 				var timeout = ServerTraits.WithInterface<ITick>().Min(t => t.TickTimeout);
@@ -427,8 +429,7 @@ namespace OpenRA.Server
 				}	
 				DispatchOrders( toDrop, toDrop.MostRecentFrame, new byte[] { 0xbf } );
 
-				if (conns.Count != 0)
-					SyncLobbyInfo();
+				SyncLobbyInfo();
 			}
 
 			try
